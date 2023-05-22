@@ -1,0 +1,404 @@
+openapi: 3.0.3
+info:
+  title: Swagger Petstore - OpenAPI 3.0
+  description: |-
+    This is a pseudo VK social network REST API description based on the OpenAPI 3.0 specification.  You can find out more about
+    Swagger at [https://swagger.io](https://swagger.io). In the third iteration of the pet store, we've switched to the design first approach!
+    You can now help us improve the API whether it's by making changes to the definition itself or to the code.
+    That way, with time, we can improve the API in general, and expose some of the new features in OAS3.
+
+    _If you're looking for the Swagger 2.0/OAS 2.0 version of Petstore, then click [here](https://editor.swagger.io/?url=https://petstore.swagger.io/v2/swagger.yaml). Alternatively, you can load via the `Edit > Load Petstore OAS 2.0` menu option!_
+    
+    Some useful links:
+    - [The Pet Store repository](https://github.com/swagger-api/swagger-petstore)
+    - [The source API definition for the Pet Store](https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml)
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: testmain@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: https://vk.swagger.io/api/v1
+tags:
+  - name: friend
+    description: Everything about your friends
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+  - name: profile
+    description: Your and another user's profiles
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+  - name: article
+    description: Articles
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+  - name: talk
+    description: User's talks
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+  - name: message
+    description: Talk's messages
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+paths:
+  /friend:
+    get:
+      tags:
+        - friend
+      summary: Get user's friends
+      description: Get user's friends
+      operationId: getFriends
+      parameters:
+        - name: securityToken
+          in: header
+          description: Encrypted token with called user's security info including userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Friend'          
+        '400':
+          description: Invalid input
+  /friend/{friendId}:
+    post:
+      tags:
+        - friend
+      summary: Add a new friend for user
+      description: Add a new friend for user
+      operationId: addFriend
+      parameters:
+        - name: friendId
+          in: path
+          description: Friend id for link with called user
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: securityToken
+          in: header
+          description: Encrypted token with called user's security info including userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Friend'
+        '400':
+          description: Invalid input
+    delete:
+      tags:
+        - friend
+      summary: Delete a user's friend
+      description: delete a user's friend
+      operationId: deleteFriend
+      parameters:
+        - name: friendId
+          in: path
+          description: Friend id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: securityToken
+          in: header
+          description: Encrypted token with called user's security info including userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '400':
+          description: Invalid user or friend value
+  /profile/{userId}:
+    get:
+      tags:
+        - profile
+      summary: Get user's profile
+      description: Get user's friends
+      operationId: getProfile
+      parameters:
+        - name: userId
+          in: path
+          description: User id for which is need to get profile
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400':
+          description: Invalid input
+  /article:
+    post:
+      tags:
+        - article
+      summary: Add a new article
+      description: Add a new article for user, passed in securityToken
+      operationId: addArticle
+      parameters:
+        - name: securityToken
+          in: header
+          description: Encrypted token with called user's security info including userId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Add a new article
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Article'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Article'
+        '400':
+          description: Invalid input
+  /article/{articleId}/uploadMedia:
+    post:
+      tags:
+        - article
+      summary: uploads an media to an article
+      description: ''
+      operationId: uploadMedia
+      parameters:
+        - name: articleId
+          in: path
+          description: ID of article to update
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: media
+          in: query
+          description: Media files
+          required: true
+          schema:
+            type: string
+        - name: securityToken
+          in: header
+          description: Encrypted token with called user's security info including userId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Invalid input
+        '405':
+          description: Returns when decrypted user ID from security token not matched with article author user ID
+  /article/{userId}:
+    get:
+      tags:
+        - article
+      summary: Get articles by userId
+      description: Get articles by userId
+      operationId: getArticleArray
+      parameters:
+        - name: userId
+          in: path
+          description: User id for which is need to get articles
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Article'
+        '400':
+          description: Invalid input
+  /talk:
+    get:
+      tags:
+        - talk
+      summary: Get user's talks array
+      description: Get user's talks array
+      operationId: getTalksArray
+      parameters:
+        - name: securityToken
+          in: header
+          description: Encrypted token with called user's security info including userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/Talk'
+        '400':
+          description: Invalid input
+  /message/{talkId}:
+    get:
+      tags:
+        - message
+      summary: Get talk's messages array
+      description: Get talk's messages array
+      operationId: getMessagesByTalk
+      parameters:
+        - name: talkId
+          in: path
+          description: Talk ID for which is need to get messages
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: securityToken
+          in: header
+          description: Encrypted token with called user's security info including userId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/Message'
+        '400':
+          description: Invalid input
+        '405':
+          description: Returns when decrypted user ID not joined to the talk with passed talk ID
+components:
+  schemas:
+    Friend:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+          example: 10
+        friendId:
+          type: integer
+          format: int64
+          example: 198772
+    Profile:
+      type: object
+      properties:
+        profileId:
+          type: integer
+          format: int64
+          example: 121
+        userId:
+          type: integer
+          format: int64
+          example: 10
+        description:
+          type: string
+          example: Hello. My name is Max and I'am 18 years old
+    Article:
+      type: object
+      properties:
+        articleId:
+          type: integer
+          format: int64
+          example: 12
+        userId:
+          type: integer
+          format: int64
+          example: 10
+        createTimeStamp:
+          type: string
+          format: date-time
+        title:
+          type: string
+          example: My journey
+        content:
+          type: string
+          example: Hello. This is my journey
+    Talk:
+      type: object
+      properties:
+        talkId:
+          type: integer
+          format: int64
+          example: 12
+        userId:
+          type: integer
+          format: int64
+          example: 10
+        friendId:
+          type: integer
+          format: int64
+          example: 678
+    Message:
+      type: object
+      properties:
+        messageId:
+          type: integer
+          format: int64
+          example: 23
+        talkId:
+          type: integer
+          format: int64
+          example: 678
+        createTimeStamp:
+          type: string
+          format: date-time
+        body:
+          type: string
+          example: Hello. How are you?
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+          example: Some api response
